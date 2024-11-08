@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/CHANDANG7/react-jenkins-docker.git'
+                git branch:"main", url: 'https://github.com/CHANDANG7/react-jenkins-docker.git'
             }
         }
         stage('Build Docker Image') {
