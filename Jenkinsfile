@@ -9,7 +9,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("CHANDANG7/react-app:${env.BUILD_ID}")
+                    docker.build("chandancj7/react-app:${env.BUILD_ID}")
                 }
             }
         }
