@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: react-app
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - react_build:/app/build
+    environment:
+      - NODE_ENV=production
+    expose:
+      - 3000
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+    volumes:
+      - react_build:/usr/share/nginx/html
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+
+  db:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: reactdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  react_build:
+  postgres_data:
