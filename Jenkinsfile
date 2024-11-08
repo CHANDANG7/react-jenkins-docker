@@ -1,30 +1,55 @@
 pipeline {
-    agent any
+    agent any  // This allows Jenkins to allocate an agent to run the job
+
     stages {
         stage('Checkout') {
             steps {
-                git branch:"main", url: 'https://github.com/CHANDANG7/react-jenkins-docker.git'
-            }
-        }
-        stage('Build Docker Image') {
-            steps {
                 script {
-                    docker.build("chandancj7/react-app:${env.BUILD_ID}")
+                    // Checkout the code from the Git repository
+                    checkout scm
                 }
             }
         }
-        stage('Deploy with Docker Compose') {
+
+        stage('Install Dependencies') {
             steps {
                 script {
-                    sh 'docker-compose down'
-                    sh 'docker-compose up -d'
+                    // Ensure the `node` block is used for shell commands
+                    node {
+                        // Run the npm install inside the node block
+                        sh 'npm install'
+                    }
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    node {
+                        // Any build commands (e.g., Maven build or webpack) here
+                        sh 'npm run build'  // For example, if you are using npm scripts
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    node {
+                        // Deployment commands, if any
+                        sh 'npm run deploy'  // Replace with the actual deploy command
+                    }
                 }
             }
         }
     }
+
     post {
         always {
-            sh 'docker-compose down'
+            // Clean-up or post actions, if needed
+            echo 'This will always run after the build completes.'
         }
     }
 }
